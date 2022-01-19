@@ -79,10 +79,14 @@ $(document).ready(function () {
         $("#dealer").append(hiddenCard);
 
         if (Game.betting) {
-            balance -= 100;
-            $("#bal").text(balance + "$");
-            $("#bet").show();
-            $("#betamount").text(100 + "$");
+            if (balance >= 100) {
+                balance -= 100;
+                $("#bal").text(balance + "$");
+                $("#bet").show();
+                $("#betamount").text(100 + "$");
+            } else {
+                Game.betting = false;
+            }
         }
     }
 

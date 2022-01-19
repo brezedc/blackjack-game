@@ -51,6 +51,7 @@ button:hover {
     margin-top: auto;
     bottom: 45%;
     display: none;
+    animation: append-animate 0.2s linear;
 }
 
 #startScreen {
