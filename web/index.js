@@ -201,16 +201,6 @@ $(document).ready(function () {
         if (Game.active) {
             let playerCard = getCard();
 
-            if (other[playerCard.card]) {
-                filename = `${other[playerCard.card]}_of_${types[playerCard.type].toLowerCase()}.png`;
-            } else {
-                filename = `${cards[playerCard.card]}_of_${types[playerCard.type].toLowerCase()}.png`;
-            }
-
-            let playercard = new Image();
-            playercard.src = `./cards/${filename}`;
-            $("#player").append(playercard);
-
             if (playerCard.card === 1) {
                 if (Game.player.sum + 11 > 21) {
                     Game.player.sum += 1;
@@ -232,6 +222,16 @@ $(document).ready(function () {
                     handleBet("win");
                 }
             }
+
+            if (other[playerCard.card]) {
+                filename = `${other[playerCard.card]}_of_${types[playerCard.type].toLowerCase()}.png`;
+            } else {
+                filename = `${cards[playerCard.card]}_of_${types[playerCard.type].toLowerCase()}.png`;
+            }
+
+            let playercard = new Image();
+            playercard.src = `./cards/${filename}`;
+            $("#player").append(playercard);
         }
     });
 
