@@ -27,17 +27,18 @@ button {
     border-color: black;
 }
 
+#game {
+    display: none;
+}
+
 .cards {
     display: flex;
     justify-content: center;
 }
 
-.card {
+.cards img {
     padding-left: 5px;
     padding-right: 5px;
-}
-
-.cards img {
     width: 7%;
     height: auto;
 }
