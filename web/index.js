@@ -29,21 +29,19 @@ let other = {
 };
 
 $(document).ready(function () {
-    function getCard() {
-        let type = Math.floor(Math.random() * 4);
-        let card = Math.floor(Math.random() * 13) + 1;
+    let balance = 1000;
+    $("#bal").text(balance + "$");
 
-        return {
-            type: type,
-            card: card,
+    function startGame(bet) {
+        Game = {
+            player: [],
+            dealer: [],
+            active: true,
+            betting: bet ?? false,
         };
-    }
 
-    function startGame() {
-        player = [];
-        dealer = [];
-        player.sum = 0;
-        dealer.sum = 0;
+        Game.player.sum = 0;
+        Game.dealer.sum = 0;
 
         let playerCard = getCard();
 
@@ -56,7 +54,9 @@ $(document).ready(function () {
         let playercard = new Image();
         playercard.src = `./cards/${filename}`;
         $("#player").append(playercard);
-        $("#playersum").text(`Sum: ${playerCard.card}`);
+        Game.player.sum += cards[playerCard.card];
+
+        $("#playersum").text(`Your Hand: ${Game.player.sum}`);
 
         let dealerCard = getCard();
 
@@ -69,14 +69,121 @@ $(document).ready(function () {
         let dealercard = new Image();
         dealercard.src = `./cards/${filename}`;
         $("#dealer").append(dealercard);
-        $("#dealersum").text(`Sum: ${dealerCard.card}`);
+        Game.dealer.sum += cards[dealerCard.card];
+
+        $("#dealersum").text(`Dealers Hand: ${Game.dealer.sum}`);
 
         hiddenCard = new Image();
         hiddenCard.src = "./cards/backside.png";
+        hiddenCard.id = "hidden";
         $("#dealer").append(hiddenCard);
+
+        if (Game.betting) {
+            balance -= 100;
+            $("#bal").text(balance + "$");
+            $("#bet").show();
+            $("#betamount").text(100 + "$");
+        }
     }
 
-    function stand() {}
+    function getCard() {
+        let type = Math.floor(Math.random() * 4);
+        let card = Math.floor(Math.random() * 13) + 1;
+
+        return {
+            type: type,
+            card: card,
+        };
+    }
+
+    function stand() {
+        Game.active = false;
+        if (hiddenCard) {
+            hiddenCard.remove();
+        }
+
+        if (Game.dealer.sum < 17) {
+            let dealerCard = getCard();
+
+            if (other[dealerCard.card]) {
+                filename = `${other[dealerCard.card]}_of_${types[dealerCard.type].toLowerCase()}.png`;
+            } else {
+                filename = `${cards[dealerCard.card]}_of_${types[dealerCard.type].toLowerCase()}.png`;
+            }
+
+            let dealercard = new Image();
+            dealercard.src = `./cards/${filename}`;
+            $("#dealer").append(dealercard);
+
+            if (dealerCard.card === 1) {
+                if (Game.dealer.sum + 11 > 21) {
+                    Game.dealer.sum += 1;
+                } else {
+                    Game.dealer.sum += 11;
+                }
+            } else {
+                Game.dealer.sum += cards[dealerCard.card];
+            }
+            $("#dealersum").text(`Dealers Hand: ${Game.dealer.sum}`);
+
+            setTimeout(() => {
+                stand();
+            }, 1000);
+        } else {
+            if (Game.dealer.sum == 21) {
+                showBanner("Dealer got a blackjack, you lost.", "rgba(111, 33, 9, 0.8)");
+            } else if (Game.dealer.sum > 21) {
+                showBanner("Dealer busted, you win!", "rgba(9, 111, 55, 0.8)");
+                if (Game.betting) {
+                    handleBet("win");
+                }
+            } else if (Game.player.sum > Game.dealer.sum) {
+                showBanner("You won!", "rgba(9, 111, 55, 0.8)");
+                if (Game.betting) {
+                    handleBet("win");
+                }
+            } else if (Game.player.sum < Game.dealer.sum) {
+                showBanner("You lost!", "rgba(111, 33, 9, 0.8)");
+            } else {
+                showBanner("It's a push!", "rgba(146, 148, 12, 0.8)");
+                if (Game.betting) {
+                    handleBet("push");
+                }
+            }
+        }
+    }
+
+    function showBanner(text, color) {
+        $("#banner").show();
+        $("#banner").css("background-color", color);
+        $("#bannerMessage").text(text);
+
+        $("#bet").hide();
+    }
+
+    function handleBet(action) {
+        if (action == "win") {
+            balance += 200;
+            $("#bal").text(balance + "$");
+        } else if (action == "push") {
+            balance += 100;
+            $("#bal").text(balance + "$");
+        }
+    }
+
+    $("#restart").on("click", function () {
+        $("#banner").hide();
+        $("#dealer").empty();
+        $("#player").empty();
+        startGame();
+    });
+
+    $("#restartBet").on("click", function () {
+        $("#banner").hide();
+        $("#dealer").empty();
+        $("#player").empty();
+        startGame(true);
+    });
 
     $("#startGame").on("click", function () {
         $("#startScreen").hide();
@@ -84,22 +191,53 @@ $(document).ready(function () {
         startGame();
     });
 
+    $("#startGameBet").on("click", function () {
+        $("#startScreen").hide();
+        $("#game").show();
+        startGame(true);
+    });
+
     $("#hit").on("click", function () {
-        let playerCard = getCard();
+        if (Game.active) {
+            let playerCard = getCard();
 
-        if (other[playerCard.card]) {
-            filename = `${other[playerCard.card]}_of_${types[playerCard.type].toLowerCase()}.png`;
-        } else {
-            filename = `${cards[playerCard.card]}_of_${types[playerCard.type].toLowerCase()}.png`;
+            if (other[playerCard.card]) {
+                filename = `${other[playerCard.card]}_of_${types[playerCard.type].toLowerCase()}.png`;
+            } else {
+                filename = `${cards[playerCard.card]}_of_${types[playerCard.type].toLowerCase()}.png`;
+            }
+
+            let playercard = new Image();
+            playercard.src = `./cards/${filename}`;
+            $("#player").append(playercard);
+
+            if (playerCard.card === 1) {
+                if (Game.player.sum + 11 > 21) {
+                    Game.player.sum += 1;
+                } else {
+                    Game.player.sum += 11;
+                }
+            } else {
+                Game.player.sum += cards[playerCard.card];
+            }
+            $("#playersum").text(`Your Hand: ${Game.player.sum}`);
+
+            if (Game.player.sum > 21) {
+                Game.active = false;
+                showBanner("You Busted!", "rgba(111, 33, 9, 0.8)");
+            } else if (Game.player.sum == 21) {
+                Game.active = false;
+                showBanner("You got a Blackjack and won!", "rgba(9, 111, 55, 0.8)");
+                if (Game.betting) {
+                    handleBet("win");
+                }
+            }
         }
-
-        let playercard = new Image();
-        playercard.src = `./cards/${filename}`;
-        $("#player").append(playercard);
-        $("#playersum").text(`Sum: ${player.sum + cards[playerCard.card]}`);
     });
 
     $("#stand").on("click", function () {
-        stand();
+        if (Game.active) {
+            stand();
+        }
     });
 });

@@ -5,7 +5,7 @@
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link rel="stylesheet" href="styles.css" />
-        <title>Blackjack Game</title>
+        <title>Blackjack Game by Breze</title>
     </head>
     <body>
         <div class="container">
@@ -13,24 +13,42 @@
             <div id="startScreen">
                 <p id="message-el">Want to play a round?</p>
 
-                <button id="startGame">Start Game</button>
+                <div class="buttons">
+                    <button id="startGame">Start Game</button>
+                    <button id="startGameBet">Start Game [100$]</button>
+                </div>
+
             </div>
 
             <div id="game">
                 <p>Dealer Cards</p>
                 <div class="cards" id="dealer"></div>
-                <p id="dealersum">Sum: 6</p>
+                <p id="dealersum">Your Hand: 6</p>
 
                 <p>Your Cards</p>
                 <div class="cards" id="player"></div>
-                <p id="playersum">Sum: 10</p>
+                <p id="playersum">Your Hand: 10</p>
 
                 <button id="hit">Hit</button>
                 <button id="stand">Stand</button>
+
+                <div class="info">
+                    <p>Balance: <span id="bal" style="color: rgb(48, 177, 48);">$</span></p>
+                    <p id="bet">Bet: <span id="betamount" style="color: rgb(48, 177, 48);">100$</span></p>
+                </div>
             </div>
-        </div>
+
+            <div id="banner">
+                <p id="bannerMessage"></p>
+                <div class="buttons">
+                    <button id="restart">Play Again</button>
+                    <button id="restartBet">Play Again [100$]</button>
+                </div>
+
+            </div>
 
         <script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha256-/xUj+3OJU5yExlq6GSYGSHk7tPXikynS7ogEvDej/m4=" crossorigin="anonymous"></script>
         <script src="index.js" type="text/javascript"></script>
+        
     </body>
 </html>
