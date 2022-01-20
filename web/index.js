@@ -43,20 +43,27 @@ $(document).ready(function () {
         Game.player.sum = 0;
         Game.dealer.sum = 0;
 
-        let playerCard = getCard();
+        let i = 0;
+        let loop = setInterval(() => {
+            let playerCard = getCard();
 
-        if (other[playerCard.card]) {
-            filename = `${other[playerCard.card]}_of_${types[playerCard.type].toLowerCase()}.png`;
-        } else {
-            filename = `${cards[playerCard.card]}_of_${types[playerCard.type].toLowerCase()}.png`;
-        }
+            if (other[playerCard.card]) {
+                filename = `${other[playerCard.card]}_of_${types[playerCard.type].toLowerCase()}.png`;
+            } else {
+                filename = `${cards[playerCard.card]}_of_${types[playerCard.type].toLowerCase()}.png`;
+            }
 
-        let playercard = new Image();
-        playercard.src = `./cards/${filename}`;
-        $("#player").append(playercard);
-        Game.player.sum += cards[playerCard.card];
+            let playercard = new Image();
+            playercard.src = `./cards/${filename}`;
+            $("#player").append(playercard);
+            Game.player.sum += cards[playerCard.card];
+            $("#playersum").text(`Your Hand: ${Game.player.sum}`);
 
-        $("#playersum").text(`Your Hand: ${Game.player.sum}`);
+            i++;
+            if (i == 2) {
+                clearInterval(loop);
+            }
+        }, 500);
 
         let dealerCard = getCard();
 
@@ -86,6 +93,14 @@ $(document).ready(function () {
                 $("#betamount").text(100 + "$");
             } else {
                 Game.betting = false;
+            }
+        }
+
+        if (Game.player.sum == 21) {
+            Game.active = false;
+            showBanner("You got a Blackjack and won!", "rgba(9, 111, 55, 0.8)");
+            if (Game.betting) {
+                handleBet("win");
             }
         }
     }
