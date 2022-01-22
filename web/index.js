@@ -43,27 +43,16 @@ $(document).ready(function () {
         Game.player.sum = 0;
         Game.dealer.sum = 0;
 
-        let i = 0;
-        let loop = setInterval(() => {
-            let playerCard = getCard();
-
-            if (other[playerCard.card]) {
-                filename = `${other[playerCard.card]}_of_${types[playerCard.type].toLowerCase()}.png`;
+        if (Game.betting) {
+            if (balance >= 100) {
+                balance -= 100;
+                $("#bal").text(balance + "$");
+                $("#bet").show();
+                $("#betamount").text(100 + "$");
             } else {
-                filename = `${cards[playerCard.card]}_of_${types[playerCard.type].toLowerCase()}.png`;
+                Game.betting = false;
             }
-
-            let playercard = new Image();
-            playercard.src = `./cards/${filename}`;
-            $("#player").append(playercard);
-            Game.player.sum += cards[playerCard.card];
-            $("#playersum").text(`Your Hand: ${Game.player.sum}`);
-
-            i++;
-            if (i == 2) {
-                clearInterval(loop);
-            }
-        }, 500);
+        }
 
         let dealerCard = getCard();
 
@@ -81,28 +70,44 @@ $(document).ready(function () {
         $("#dealersum").text(`Dealers Hand: ${Game.dealer.sum}`);
 
         hiddenCard = new Image();
-        hiddenCard.src = "./cards/backside.png";
+        hiddenCard.src = "./assets/cards/backside.png";
         hiddenCard.id = "hidden";
         $("#dealer").append(hiddenCard);
 
-        if (Game.betting) {
-            if (balance >= 100) {
-                balance -= 100;
-                $("#bal").text(balance + "$");
-                $("#bet").show();
-                $("#betamount").text(100 + "$");
-            } else {
-                Game.betting = false;
-            }
-        }
+        let i = 0;
+        let loop = setInterval(() => {
+            let playerCard = getCard();
 
-        if (Game.player.sum == 21) {
-            Game.active = false;
-            showBanner("You got a Blackjack and won!", "rgba(9, 111, 55, 0.8)");
-            if (Game.betting) {
-                handleBet("win");
+            console.log("getting card?");
+
+            if (other[playerCard.card]) {
+                filename = `${other[playerCard.card]}_of_${types[playerCard.type].toLowerCase()}.png`;
+            } else {
+                filename = `${cards[playerCard.card]}_of_${types[playerCard.type].toLowerCase()}.png`;
             }
-        }
+
+            let playercard = new Image();
+            playercard.src = `./cards/${filename}`;
+            $("#player").append(playercard);
+            Game.player.sum += cards[playerCard.card];
+            $("#playersum").text(`Your Hand: ${Game.player.sum}`);
+
+            i++;
+
+            console.log(Game.player.sum);
+
+            if (Game.player.sum == 21) {
+                console.log("21?");
+                Game.active = false;
+                showBanner("You got a Blackjack and won!", "rgba(9, 111, 55, 0.8)");
+                if (Game.betting) {
+                    handleBet("win");
+                }
+            }
+            if (i == 2) {
+                clearInterval(loop);
+            }
+        }, 500);
     }
 
     function getCard() {
